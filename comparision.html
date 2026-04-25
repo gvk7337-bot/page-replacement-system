@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Replacement Simulator | Comparison</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <header>
+    <nav class="navbar">
+      <div class="nav-brand">PRS <span>// Simulator</span></div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="simulator.html">Simulator</a></li>
+        <li><a href="comparison.html" class="active">Comparison</a></li>
+        <li><a href="theory.html">Theory</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <div class="page-header">
+      <div class="page-header-inner">
+        <span class="page-tag">// comparison</span>
+        <h1>Algorithm Comparison</h1>
+        <p>Run FIFO, LRU, and Optimal on the same input simultaneously and compare their performance metrics.</p>
+      </div>
+    </div>
+
+    <section class="comparison-layout">
+
+      <!-- Input row  (CSS Grid: 2 inputs + buttons) -->
+      <div class="compare-input-row">
+        <div class="form-group" style="margin:0;">
+          <label for="compare-pages">Page Reference String</label>
+          <input type="text" id="compare-pages" placeholder="e.g. 7,0,1,2,0,3,0,4,2,3,0,3,2" autocomplete="off" />
+          <p class="form-hint">Comma-separated non-negative integers</p>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label for="compare-frames">Number of Frames</label>
+          <input type="number" id="compare-frames" min="1" max="10" value="3" />
+          <p class="form-hint">Between 1 and 10</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;align-self:end;">
+          <button class="btn btn-compare" id="compare-btn">Compare All Algorithms</button>
+          <button class="btn btn-secondary" id="sample-btn-compare" style="width:100%;justify-content:center;">Load Sample</button>
+        </div>
+      </div>
+
+      <!-- Results injected here by runComparison() in script.js -->
+      <div id="compare-output">
+        <div class="table-container">
+          <div class="empty-state">
+            <div class="empty-state-icon">[BAR]</div>
+            <h3>No comparison yet</h3>
+            <p>Enter a reference string above and click "Compare All Algorithms".</p>
+            <p style="margin-top:0.5rem;"><a href="theory.html">Learn about the algorithms first</a></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- How to read results -->
+      <div style="background-color:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.8rem;margin-top:2rem;box-shadow:var(--shadow);">
+        <p class="panel-title" style="margin-bottom:1.2rem;">// How to Read the Results</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+          <div>
+            <h3 style="font-size:0.85rem;color:var(--text-primary);font-family:var(--font-display);margin-bottom:0.5rem;">Page Faults</h3>
+            <p style="font-size:0.88rem;margin:0;">A page fault happens when the CPU requests a page not in RAM. The OS must fetch it from disk &mdash; which is slow. Fewer faults means better performance.</p>
+          </div>
+          <div>
+            <h3 style="font-size:0.85rem;color:var(--text-primary);font-family:var(--font-display);margin-bottom:0.5rem;">Hit Ratio</h3>
+            <p style="font-size:0.88rem;margin:0;">Hit Ratio = (Hits / Total References) x 100%. A higher hit ratio means the algorithm keeps the most useful pages in memory.</p>
+          </div>
+          <div>
+            <h3 style="font-size:0.85rem;color:var(--text-primary);font-family:var(--font-display);margin-bottom:0.5rem;">Why Optimal Always Wins</h3>
+            <p style="font-size:0.88rem;margin:0;">Optimal knows all future references in advance, which is impossible in a real OS. It is a theoretical benchmark showing the minimum achievable fault count.</p>
+          </div>
+          <div>
+            <h3 style="font-size:0.85rem;color:var(--text-primary);font-family:var(--font-display);margin-bottom:0.5rem;">Effect of Frame Count</h3>
+            <p style="font-size:0.88rem;margin:0;">More frames usually means fewer faults. However FIFO can show Belady's Anomaly: more frames can sometimes cause more faults. LRU and Optimal are immune.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Page Replacement Algorithm Simulator &nbsp;|&nbsp; <span>Operating Systems Lab Project</span> &nbsp;|&nbsp; HTML5 + CSS3 + Vanilla JS</p>
+  </footer>
+
+  <script src="algorithms.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Replacement Simulator | Home</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- NAVIGATION BAR  (Flexbox) -->
+  <header>
+    <nav class="navbar">
+      <div class="nav-brand">PRS <span>// Simulator</span></div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="nav-menu">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="simulator.html">Simulator</a></li>
+        <li><a href="comparison.html">Comparison</a></li>
+        <li><a href="theory.html">Theory</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-tag">Operating Systems &mdash; BTech CS</div>
+      <h1>Page Replacement<br><span class="highlight">Algorithm Simulator</span></h1>
+      <p class="hero-desc">
+        Visualize and compare FIFO, LRU, and Optimal page replacement strategies.
+        Step through memory frames, spot page faults instantly, and understand
+        what makes each algorithm tick.
+      </p>
+      <div class="hero-actions">
+        <a href="simulator.html" class="btn btn-primary">Open Simulator</a>
+        <a href="theory.html"    class="btn btn-secondary">Read Theory</a>
+      </div>
+    </section>
+
+    <!-- Feature grid  (CSS Grid 3-col) -->
+    <section class="features-section">
+      <h2 class="section-title">What This Tool Does</h2>
+      <p class="section-subtitle">// core capabilities</p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">[S]</div>
+          <h3>Step-by-Step Visualization</h3>
+          <p>Watch pages load and replace in memory frames at each step. Page faults and hits are clearly highlighted in the result table.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">[A]</div>
+          <h3>Three Algorithms</h3>
+          <p>Simulate FIFO, LRU, and Optimal (Belady's) on any custom reference string and any number of frames from 1 to 10.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">[M]</div>
+          <h3>Performance Metrics</h3>
+          <p>Instantly see total page faults, page hits, and hit ratio. Compare all three algorithms side by side on the comparison page.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">[T]</div>
+          <h3>Frame State Table</h3>
+          <p>A clearly structured grid shows the state of every memory frame at every step, with color-coded fault and hit columns.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">[C]</div>
+          <h3>Side-by-Side Comparison</h3>
+          <p>Run all three algorithms on the same input simultaneously and see which one wins with a clean bar chart and summary cards.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">[B]</div>
+          <h3>Theory + FAQ</h3>
+          <p>Built-in theory page explains every algorithm with worked examples, a comparison table, and a quick FAQ for exam prep.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Algorithm overview grid  (CSS Grid 3-col) -->
+    <section class="features-section" style="padding-top:0;">
+      <h2 class="section-title">The Three Algorithms at a Glance</h2>
+      <p class="section-subtitle">// quick summary</p>
+
+      <div class="algo-grid">
+        <div class="algo-card fifo">
+          <h3>FIFO &mdash; First In, First Out</h3>
+          <p>Replaces the page that has been in memory the longest. Simple circular pointer. Can suffer from Belady's Anomaly.</p>
+        </div>
+        <div class="algo-card lru">
+          <h3>LRU &mdash; Least Recently Used</h3>
+          <p>Replaces the page not used for the longest time. Better real-world performance than FIFO. Immune to Belady's Anomaly.</p>
+        </div>
+        <div class="algo-card opt">
+          <h3>Optimal &mdash; Belady's Algorithm</h3>
+          <p>Replaces the page used farthest in the future. Theoretical minimum faults. Used as a benchmark only.</p>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:2.5rem;">
+        <a href="simulator.html" class="btn btn-primary">Start Simulating</a>
+        &nbsp;&nbsp;
+        <a href="comparison.html" class="btn btn-secondary">Compare Algorithms</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Page Replacement Algorithm Simulator &nbsp;|&nbsp; <span>Operating Systems Lab Project</span> &nbsp;|&nbsp; HTML5 + CSS3 + Vanilla JS</p>
+  </footer>
+
+  <script src="algorithms.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Replacement Simulator | Theory</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <header>
+    <nav class="navbar">
+      <div class="nav-brand">PRS <span>// Simulator</span></div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="simulator.html">Simulator</a></li>
+        <li><a href="comparison.html">Comparison</a></li>
+        <li><a href="theory.html" class="active">Theory</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header-inner">
+        <span class="page-tag">// theory</span>
+        <h1>Algorithm Theory</h1>
+        <p>Concepts, worked examples, comparison table, and FAQ for FIFO, LRU, and Optimal page replacement algorithms.</p>
+      </div>
+    </div>
+
+    <section class="theory-layout">
+
+      <!-- ============================================================
+           SECTION 1: BACKGROUND  (full width)
+           ============================================================ -->
+      <div class="theory-section">
+        <div class="theory-section-header">
+          <span class="theory-algo-tag tag-comp">Background</span>
+          <h2>What is Page Replacement?</h2>
+        </div>
+        <div class="theory-body">
+          <h3>Virtual Memory and Paging</h3>
+          <p>
+            Modern operating systems use <strong style="color:var(--text-primary)">virtual memory</strong>
+            to give each process the illusion of a large, contiguous address space.
+            Physical RAM is divided into fixed-size units called <strong style="color:var(--accent)">frames</strong>,
+            and a process's address space is divided into equally sized units called
+            <strong style="color:var(--accent)">pages</strong>.
+          </p>
+          <h3>What is a Page Fault?</h3>
+          <p>
+            When the CPU requests a page not currently in RAM, a
+            <strong style="color:var(--red)">page fault</strong> occurs. The OS must fetch
+            that page from disk and load it into a free frame. If no frame is free,
+            it must <strong style="color:var(--text-primary)">evict</strong> an existing page
+            to make room &mdash; this is where the replacement algorithm is applied.
+          </p>
+          <h3>Key Terms</h3>
+          <ul>
+            <li><strong style="color:var(--text-primary)">Frame:</strong> A slot in physical RAM that holds one page.</li>
+            <li><strong style="color:var(--text-primary)">Page:</strong> A fixed-size chunk of a process's virtual address space.</li>
+            <li><strong style="color:var(--text-primary)">Page Fault:</strong> Accessing a page that is NOT in RAM (miss).</li>
+            <li><strong style="color:var(--text-primary)">Page Hit:</strong> Accessing a page that IS already in RAM.</li>
+            <li><strong style="color:var(--text-primary)">Hit Ratio:</strong> (Total Hits / Total References) x 100%. Higher is better.</li>
+            <li><strong style="color:var(--text-primary)">Reference String:</strong> The ordered sequence of page numbers a process accesses.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           SECTION 2: THREE ALGORITHMS  (3-column Flexbox row)
+           All three algorithm cards sit side by side.
+           Flexbox: display:flex + flex:1 on each card = equal widths.
+           ============================================================ -->
+
+      <!-- Row label -->
+      <div style="margin-bottom:0.6rem;">
+        <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;">// The Three Algorithms &mdash; side by side</p>
+      </div>
+
+      <!-- Flexbox 3-column row -->
+      <div class="algo-3col-row">
+
+        <!-- ---- COLUMN 1: FIFO ---- -->
+        <div class="algo-col-card fifo-card">
+          <div class="algo-col-head">
+            <span class="theory-algo-tag tag-fifo">FIFO</span>
+            <h2>First-In, First-Out</h2>
+          </div>
+          <div class="algo-col-body">
+
+            <p class="col-h">Concept</p>
+            <p>
+              Replace the page that was loaded into memory <strong>first</strong> &mdash;
+              the oldest page in RAM. Imagine a queue at a counter: whoever arrived
+              first leaves first.
+            </p>
+
+            <p class="col-h">How It Works</p>
+            <ul>
+              <li>Maintain a circular pointer over the frames.</li>
+              <li>On a page fault: load the new page at the pointer position.</li>
+              <li>Advance the pointer using modulo arithmetic.</li>
+              <li>On a page hit: do nothing, pointer stays.</li>
+            </ul>
+
+            <p class="col-h">Worked Example</p>
+            <div class="col-example">
+              <strong>Ref:</strong> 7,0,1,2,0,3,0,4 &nbsp;|&nbsp; <strong>Frames: 3</strong><br><br>
+              Step 1: Ref=7 | [7,-,-] | FAULT<br>
+              Step 2: Ref=0 | [7,0,-] | FAULT<br>
+              Step 3: Ref=1 | [7,0,1] | FAULT<br>
+              Step 4: Ref=2 | [2,0,1] | FAULT (7 out, oldest)<br>
+              Step 5: Ref=0 | [2,0,1] | HIT<br>
+              Step 6: Ref=3 | [2,3,1] | FAULT (0 out)<br>
+              Step 7: Ref=0 | [2,3,0] | FAULT (1 out)<br>
+              Step 8: Ref=4 | [4,3,0] | FAULT (2 out)<br><br>
+              <strong>Faults: 7 &nbsp;|&nbsp; Hits: 1 &nbsp;|&nbsp; Ratio: 12.5%</strong>
+            </div>
+
+            <p class="col-h">Advantages</p>
+            <ul>
+              <li>Extremely simple to implement.</li>
+              <li>Very low overhead (just one integer pointer).</li>
+            </ul>
+
+            <p class="col-h">Disadvantages</p>
+            <ul>
+              <li>Ignores how recently or frequently a page is used.</li>
+              <li>Suffers from <strong>Belady's Anomaly</strong>: more frames can sometimes cause more faults.</li>
+              <li>Not used in modern OS due to poor performance.</li>
+            </ul>
+
+          </div>
+        </div>
+        <!-- end FIFO card -->
+
+        <!-- ---- COLUMN 2: LRU ---- -->
+        <div class="algo-col-card lru-card">
+          <div class="algo-col-head">
+            <span class="theory-algo-tag tag-lru">LRU</span>
+            <h2>Least Recently Used</h2>
+          </div>
+          <div class="algo-col-body">
+
+            <p class="col-h">Concept</p>
+            <p>
+              Replace the page that has <strong>not been used for the longest time</strong>.
+              Based on <em>temporal locality</em>: recently used pages are likely to
+              be used again soon.
+            </p>
+
+            <p class="col-h">How It Works</p>
+            <ul>
+              <li>Track a timestamp (step number) for each frame's last access.</li>
+              <li>On a page fault: evict the frame with the smallest (oldest) timestamp.</li>
+              <li>On a page hit: update that frame's timestamp to the current step.</li>
+            </ul>
+
+            <p class="col-h">Worked Example</p>
+            <div class="col-example">
+              <strong>Ref:</strong> 7,0,1,2,0,3,0,4 &nbsp;|&nbsp; <strong>Frames: 3</strong><br><br>
+              Step 1: Ref=7 | [7,-,-] | FAULT (7@1)<br>
+              Step 2: Ref=0 | [7,0,-] | FAULT (0@2)<br>
+              Step 3: Ref=1 | [7,0,1] | FAULT (1@3)<br>
+              Step 4: Ref=2 | [2,0,1] | FAULT (7 LRU@1)<br>
+              Step 5: Ref=0 | [2,0,1] | HIT   (0@5)<br>
+              Step 6: Ref=3 | [2,0,3] | FAULT (1 LRU@3)<br>
+              Step 7: Ref=0 | [2,0,3] | HIT   (0@7)<br>
+              Step 8: Ref=4 | [4,0,3] | FAULT (2 LRU@4)<br><br>
+              <strong>Faults: 6 &nbsp;|&nbsp; Hits: 2 &nbsp;|&nbsp; Ratio: 25%</strong>
+            </div>
+
+            <p class="col-h">Advantages</p>
+            <ul>
+              <li>Better performance than FIFO in practice.</li>
+              <li>Immune to Belady's Anomaly (stack algorithm).</li>
+              <li>Exploits temporal locality effectively.</li>
+            </ul>
+
+            <p class="col-h">Disadvantages</p>
+            <ul>
+              <li>Requires tracking access history for all pages.</li>
+              <li>More implementation overhead than FIFO.</li>
+            </ul>
+
+          </div>
+        </div>
+        <!-- end LRU card -->
+
+        <!-- ---- COLUMN 3: OPTIMAL ---- -->
+        <div class="algo-col-card opt-card">
+          <div class="algo-col-head">
+            <span class="theory-algo-tag tag-opt">OPT</span>
+            <h2>Optimal (Belady's)</h2>
+          </div>
+          <div class="algo-col-body">
+
+            <p class="col-h">Concept</p>
+            <p>
+              Replace the page whose <strong>next use is farthest in the future</strong>.
+              If a page will never be used again, it is the best candidate.
+              Guarantees the minimum possible fault count.
+            </p>
+
+            <p class="col-h">How It Works</p>
+            <ul>
+              <li>On a page fault: look ahead in the reference string.</li>
+              <li>For each frame, find the next occurrence of its page.</li>
+              <li>Evict the frame whose page appears latest (or never) in the future.</li>
+            </ul>
+
+            <p class="col-h">Worked Example</p>
+            <div class="col-example">
+              <strong>Ref:</strong> 7,0,1,2,0,3,0,4 &nbsp;|&nbsp; <strong>Frames: 3</strong><br><br>
+              Step 1: Ref=7 | [7,-,-] | FAULT<br>
+              Step 2: Ref=0 | [7,0,-] | FAULT<br>
+              Step 3: Ref=1 | [7,0,1] | FAULT<br>
+              Step 4: Ref=2 | [2,0,1] | FAULT (7 never used again)<br>
+              Step 5: Ref=0 | [2,0,1] | HIT<br>
+              Step 6: Ref=3 | [2,0,3] | FAULT (1 used never again)<br>
+              Step 7: Ref=0 | [2,0,3] | HIT<br>
+              Step 8: Ref=4 | [4,0,3] | FAULT (2 used never again)<br><br>
+              <strong>Faults: 5 &nbsp;|&nbsp; Hits: 3 &nbsp;|&nbsp; Ratio: 37.5%</strong>
+            </div>
+
+            <p class="col-h">Advantages</p>
+            <ul>
+              <li>Provably optimal: minimum possible faults.</li>
+              <li>Immune to Belady's Anomaly.</li>
+              <li>Perfect benchmark for comparing real algorithms.</li>
+            </ul>
+
+            <p class="col-h">Disadvantages</p>
+            <ul>
+              <li>Cannot be implemented in a real OS (future is unknown).</li>
+              <li>Only useful for simulation and analysis.</li>
+            </ul>
+
+          </div>
+        </div>
+        <!-- end Optimal card -->
+
+      </div>
+      <!-- end algo-3col-row -->
+
+      <!-- ============================================================
+           SECTION 3: FULL COMPARISON TABLE  (single unified table)
+           All three algorithms compared across all properties in one place.
+           ============================================================ -->
+      <div class="theory-section">
+        <div class="theory-section-header">
+          <span class="theory-algo-tag tag-comp">Comparison</span>
+          <h2>All Algorithms &mdash; Unified Comparison Table</h2>
+        </div>
+        <div class="theory-body">
+          <p>This table compares FIFO, LRU, and Optimal across every important property in a single view.</p>
+
+          <table class="theory-table">
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>FIFO</th>
+                <th>LRU</th>
+                <th>Optimal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Full Name</td>
+                <td>First-In, First-Out</td>
+                <td>Least Recently Used</td>
+                <td>Optimal / Belady's / MIN</td>
+              </tr>
+              <tr>
+                <td>Replacement Criterion</td>
+                <td>Oldest loaded page</td>
+                <td>Page not used for the longest time</td>
+                <td>Page used farthest in the future</td>
+              </tr>
+              <tr>
+                <td>Knowledge Required</td>
+                <td>Past &mdash; insertion order</td>
+                <td>Past &mdash; access history</td>
+                <td>Future &mdash; entire reference string</td>
+              </tr>
+              <tr>
+                <td>Implementable in Real OS?</td>
+                <td class="cell-good">Yes</td>
+                <td class="cell-good">Yes (with overhead)</td>
+                <td class="cell-bad">No (theoretical only)</td>
+              </tr>
+              <tr>
+                <td>Page Faults (typical)</td>
+                <td class="cell-bad">High</td>
+                <td class="cell-mid">Medium</td>
+                <td class="cell-good">Low (minimum possible)</td>
+              </tr>
+              <tr>
+                <td>Belady's Anomaly</td>
+                <td class="cell-bad">Yes &mdash; can occur</td>
+                <td class="cell-good">No &mdash; immune</td>
+                <td class="cell-good">No &mdash; immune</td>
+              </tr>
+              <tr>
+                <td>Stack Algorithm?</td>
+                <td class="cell-bad">No</td>
+                <td class="cell-good">Yes</td>
+                <td class="cell-good">Yes</td>
+              </tr>
+              <tr>
+                <td>Data Structure Used</td>
+                <td>Circular pointer (queue)</td>
+                <td>Timestamp array per frame</td>
+                <td>Future lookahead search</td>
+              </tr>
+              <tr>
+                <td>Time Complexity</td>
+                <td>O(n &times; f)</td>
+                <td>O(n &times; f)</td>
+                <td>O(n&sup2; &times; f)</td>
+              </tr>
+              <tr>
+                <td>Implementation Complexity</td>
+                <td class="cell-good">Simple</td>
+                <td class="cell-mid">Moderate</td>
+                <td class="cell-bad">Complex</td>
+              </tr>
+              <tr>
+                <td>Practical Use</td>
+                <td>Rarely &mdash; too naive</td>
+                <td class="cell-good">Common in real OS</td>
+                <td>Benchmarking only</td>
+              </tr>
+              <tr>
+                <td>Hit Ratio (typical)</td>
+                <td class="cell-bad">Lowest</td>
+                <td class="cell-mid">Medium</td>
+                <td class="cell-good">Highest</td>
+              </tr>
+              <tr>
+                <td>Key Principle</td>
+                <td>FIFO queue</td>
+                <td>Temporal locality</td>
+                <td>Oracle / look-ahead</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           SECTION 4: BELADY'S ANOMALY  (full width)
+           ============================================================ -->
+      <div class="theory-section">
+        <div class="theory-section-header">
+          <span class="theory-algo-tag tag-note">Note</span>
+          <h2>Belady's Anomaly &mdash; FIFO Specific</h2>
+        </div>
+        <div class="theory-body">
+          <p>
+            With FIFO, increasing the number of frames can sometimes
+            <strong style="color:var(--red)">increase</strong> the number of page faults.
+            This is counterintuitive and is called <strong style="color:var(--text-primary)">Belady's Anomaly</strong>.
+          </p>
+          <div class="example-box">
+            <strong>Classic demonstration:</strong><br>
+            Reference String: 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5<br><br>
+            With 3 frames (FIFO): <strong>9 page faults</strong><br>
+            With 4 frames (FIFO): <strong>10 page faults</strong> &nbsp;&larr;&nbsp; more frames caused MORE faults!
+          </div>
+          <p>
+            LRU and Optimal are called <strong style="color:var(--accent)">stack algorithms</strong>.
+            For stack algorithms, adding one more frame can only decrease or maintain the fault count &mdash;
+            it can never increase it. This is why LRU and Optimal do not suffer from Belady's Anomaly.
+          </p>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           SECTION 5: FAQ ACCORDION
+           Implemented with CSS max-height + JS class toggle.
+           See initFAQ() in script.js for the click logic.
+           ============================================================ -->
+      <div class="theory-section">
+        <div class="theory-section-header">
+          <span class="theory-algo-tag tag-faq">FAQ</span>
+          <h2>Frequently Asked Questions</h2>
+        </div>
+        <div class="theory-body">
+          <div class="faq-list">
+
+            <!-- Q1 -->
+            <div class="faq-item">
+              <button class="faq-question">
+                <span class="faq-q-text">What is the difference between a page fault and a page hit?</span>
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  A <strong>page hit</strong> occurs when the CPU requests a page that is already loaded in one of the RAM frames &mdash; no disk access is needed, and execution continues quickly. A <strong>page fault</strong> occurs when the requested page is NOT in RAM. The OS must pause the process, fetch the page from disk (which is thousands of times slower than RAM), load it into a frame, and then resume execution. Minimizing page faults is the primary goal of page replacement algorithms.
+                </div>
+              </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="faq-item">
+              <button class="faq-question">
+                <span class="faq-q-text">Why does Optimal always have the fewest page faults?</span>
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  The Optimal algorithm has complete knowledge of all future page references. When it must evict a page, it always picks the one that will not be needed for the longest time &mdash; or will never be needed again. This is mathematically proven to produce the minimum possible fault count for any given input. No other algorithm can do better, because every other eviction choice would risk faulting sooner. This is why Optimal is used as a <strong>theoretical benchmark</strong> &mdash; you compare FIFO and LRU against it to see how close they get.
+                </div>
+              </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="faq-item">
+              <button class="faq-question">
+                <span class="faq-q-text">Can LRU be used in a real operating system?</span>
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  Yes, but not in its pure form. True LRU requires recording the exact time of every memory access, which adds significant hardware and software overhead. Real operating systems use <strong>approximations of LRU</strong>, such as the <strong>Clock (Second-Chance) algorithm</strong> or the <strong>NFU (Not Frequently Used)</strong> algorithm. These give LRU-like behavior at a much lower cost. The core idea &mdash; keeping recently used pages in memory &mdash; is widely used in modern OS page management.
+                </div>
+              </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="faq-item">
+              <button class="faq-question">
+                <span class="faq-q-text">What exactly is Belady's Anomaly and which algorithms suffer from it?</span>
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  Belady's Anomaly is the counterintuitive phenomenon where <strong>adding more memory frames causes MORE page faults</strong> with the FIFO algorithm. You would normally expect that more RAM means better performance, but FIFO's simplistic replacement strategy does not guarantee this. <br><br>Only <strong>FIFO</strong> (and a few other non-stack algorithms) can exhibit this anomaly. <strong>LRU</strong> and <strong>Optimal</strong> are called <em>stack algorithms</em>, which means: if a page is in memory with N frames, it will also be in memory with N+1 frames. This property guarantees they are immune to Belady's Anomaly.
+                </div>
+              </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="faq-item">
+              <button class="faq-question">
+                <span class="faq-q-text">What is thrashing and how does it relate to page replacement?</span>
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  <strong>Thrashing</strong> occurs when a process spends more time handling page faults than executing actual instructions. This happens when a process does not have enough frames to hold its <em>working set</em> &mdash; the set of pages it actively uses. When thrashing occurs, the CPU is almost always waiting for disk I/O, and system performance collapses. A good page replacement algorithm (like LRU) reduces thrashing by keeping the most actively used pages in memory. Increasing the number of frames is the most direct fix.
+                </div>
+              </div>
+            </div>
+
+            <!-- Q6 -->
+            <div class="faq-item">
+              <button class="faq-question">
+                <span class="faq-q-text">What is the hit ratio formula and what does a good hit ratio look like?</span>
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  The formula is: <code>Hit Ratio = (Total Page Hits / Total Page References) &times; 100%</code><br><br>
+                  A <strong>higher hit ratio is always better</strong>. In this simulator, hit ratio directly shows how often the algorithm avoided a costly disk fetch. In real systems, modern OS memory managers aim for a hit ratio of <strong>99% or higher</strong> for well-behaved workloads. On small examples with few frames (like the 3-frame, 8-page demos here), ratios of 10&ndash;40% are normal because there are very few frames available.
+                </div>
+              </div>
+            </div>
+
+            <!-- Q7 -->
+            <div class="faq-item">
+              <button class="faq-question">
+                <span class="faq-q-text">What is the Working Set Model and how does it improve performance?</span>
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  The <strong>Working Set Model</strong>, introduced by Peter Denning, defines the working set W(t, &Delta;) as the set of pages accessed during the last &Delta; memory references (the <em>working set window</em>). The idea is that a process needs all its working-set pages in memory to run efficiently. If a process is allocated fewer frames than its working set size, it will thrash. The model guides OS decisions about how many frames to give each process &mdash; it is one of the most important concepts in memory management beyond basic page replacement.
+                </div>
+              </div>
+            </div>
+
+            <!-- Q8 -->
+            <div class="faq-item">
+              <button class="faq-question">
+                <span class="faq-q-text">Which algorithm should I mention as "best" in an exam answer?</span>
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  For exam purposes: <strong>Optimal produces the fewest faults</strong> but cannot be implemented. <strong>LRU is the best practical algorithm</strong> because it approximates Optimal well using past access history, does not suffer from Belady's Anomaly, and is widely used in real OS implementations (via approximations like the Clock algorithm). <strong>FIFO is the simplest</strong> but performs worst and can suffer from Belady's Anomaly. A good exam answer acknowledges all three roles: FIFO for simplicity, LRU for practice, Optimal for benchmarking.
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <!-- end faq-list -->
+        </div>
+      </div>
+      <!-- end FAQ section -->
+
+      <!-- CTA -->
+      <div style="text-align:center;padding:2rem 0;">
+        <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.2rem;font-family:var(--font-mono);">
+          // Ready to see these algorithms in action?
+        </p>
+        <a href="simulator.html" class="btn btn-primary">Open the Simulator</a>
+        &nbsp;&nbsp;
+        <a href="comparison.html" class="btn btn-secondary">Compare All Three</a>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Page Replacement Algorithm Simulator &nbsp;|&nbsp; <span>Operating Systems Lab Project</span> &nbsp;|&nbsp; HTML5 + CSS3 + Vanilla JS</p>
+  </footer>
+
+  <script src="algorithms.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
